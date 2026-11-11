@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pour toi 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1c0f26;--bg2:#3a1236;--rose:#ff7a9c;--soft:#ffdfe7;--mute:#b99ab0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg) 70%);color:var(--soft);font-family:'Fraunces',Georgia,serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.h{position:absolute;bottom:-40px;animation:up linear forwards;opacity:.0}
+@keyframes up{0%{opacity:0;transform:translateY(0)}15%{opacity:.8}100%{opacity:0;transform:translateY(-110vh) rotate(25deg)}}
+.scene{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;gap:22px}
+.scene.on{display:flex}
+h1{font-size:clamp(1.8rem,8vw,2.6rem);font-weight:600;line-height:1.2;margin:0;max-width:16ch}
+p{font-size:1.15rem;line-height:1.5;margin:0;max-width:30ch;color:var(--soft)}
+.small{color:var(--mute);font-style:italic;font-size:1rem}
+button,input{font:inherit}
+.btn{background:var(--rose);color:#2a0b1d;border:0;border-radius:999px;padding:14px 30px;font-size:1.1rem;font-weight:600;cursor:pointer}
+.btn:focus-visible,input:focus-visible{outline:3px solid var(--soft);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--soft);border:1.5px solid var(--mute)}
+input{background:transparent;border:0;border-bottom:2px solid var(--rose);color:var(--soft);text-align:center;font-size:1.4rem;padding:8px;width:min(80vw,16rem)}
+#env{font-size:5.5rem;cursor:pointer;background:none;border:0;animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{50%{transform:scale(1.12)}}
+.row{display:flex;gap:16px;align-items:center;justify-content:center;min-height:56px}
+#no{transition:left .25s,top .25s,transform .25s}
+#reason{min-height:4.5em;font-size:1.35rem;font-style:italic;max-width:22ch}
+#big{font-size:4rem;animation:beat 1.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.h,#env,#big{animation:none}}
+</style>
+</head>
+<body>
+<div id="hearts" aria-hidden="true"></div>
+
+<section class="scene on" id="s1">
+  <button id="env" aria-label="Ouvrir le message">💌</button>
+  <p class="small">J’ai laissé quelque chose pour toi. Touche l’enveloppe.</p>
+</section>
+
+<section class="scene" id="s3">
+  <h1 id="q">Shalom, est-ce que tu sais à quel point je t’aime ?</h1>
+  <div class="row">
+    <button class="btn" id="yes">Oui</button>
+    <button class="btn ghost" id="no">Non</button>
+  </div>
+  <p class="small" id="hint"></p>
+</section>
+
+<section class="scene" id="s4">
+  <p class="small">Alors voici quelques raisons…</p>
+  <p id="reason"></p>
+  <button class="btn" id="next">Une autre</button>
+</section>
+
+<section class="scene" id="s5">
+  <div id="big">💍</div>
+  <h1 id="final">Shalom, veux-tu être avec moi jusqu’à la fin de mes jours ?</h1>
+  <div class="row">
+    <button class="btn" id="yes2" style="transition:transform .3s">Oui</button>
+    <button class="btn ghost" id="no2" style="transition:left .25s,top .25s">Non</button>
+  </div>
+  <p class="small" id="hint2"></p>
+</section>
+
+<section class="scene" id="s6">
+  <div id="big2" style="font-size:4.5rem">❤️</div>
+  <h1>Je t’aime, Shalom.</h1>
+  <p style="max-width:32ch;font-style:italic;line-height:1.7">Shalom, depuis que tu es dans ma vie, tout est plus doux. Avec toi, je n’ai pas besoin de faire semblant : je suis simplement moi, et tu m’aimes comme ça. Je ne sais pas ce que l’avenir nous réserve, mais je sais que je veux le vivre à tes côtés, chaque jour, jusqu’au bout. Tu es mon présent, et tu es mon avenir. C’est promis.</p>
+  <button class="btn ghost" id="again">Revoir depuis le début</button>
+</section>
+
+<script>
+(function(){
+  var reasons = [
+    "Tu comptes énormément pour moi.",
+    "Ton sourire change toute ma journée.",
+    "Avec toi, je me sens moi-même, sans rien jouer.",
+    "Tu m’écoutes comme personne d’autre.",
+    "Tu me donnes envie de devenir une meilleure personne.",
+    "Même les moments simples deviennent précieux avec toi.",
+    "Ces deux mois ensemble ont déjà tout changé.",
+    "Je veux que notre histoire aille jusqu’au mariage."
+  ];
+  var $ = function(id){return document.getElementById(id)};
+  var name = "Shalom", i = 0, tries = 0, tries2 = 0, scale = 1, heartTimer = null;
+
+  function show(id){
+    document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('on')});
+    $(id).classList.add('on');
+  }
+  function heart(){
+    var h = document.createElement('div');
+    h.className = 'h';
+    h.textContent = ['❤️','💖','💕','💗'][Math.floor(Math.random()*4)];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (16 + Math.random()*26) + 'px';
+    h.style.animationDuration = (5 + Math.random()*5) + 's';
+    $('hearts').appendChild(h);
+    setTimeout(function(){h.remove()}, 10500);
+  }
+  function startHearts(rate){
+    clearInterval(heartTimer);
+    heartTimer = setInterval(heart, rate);
+  }
+
+  $('env').onclick = function(){ show('s3'); startHearts(1400); };
+
+
+  var hints = [
+    "",
+    "Hmm, essaie encore 😏",
+    "Le bouton fuit, tu as vu ?",
+    "Tu sais que tu peux dire oui…",
+    "Ok, je ne te laisse pas le choix 😄"
+  ];
+  function dodge(e){
+    if(e) e.preventDefault();
+    tries++;
+    var b = $('no');
+    if(tries >= 5){ b.style.display = 'none'; $('hint').textContent = hints[4]; return; }
+    $('hint').textContent = hints[tries];
+    b.style.position = 'fixed';
+    var x = 20 + Math.random()*(window.innerWidth - 120);
+    var y = 20 + Math.random()*(window.innerHeight - 100);
+    b.style.left = x + 'px';
+    b.style.top = y + 'px';
+  }
+  $('no').addEventListener('click', dodge);
+  $('no').addEventListener('touchstart', dodge, {passive:false});
+
+  $('yes').onclick = function(){ i = 0; $('reason').textContent = reasons[0]; show('s4'); startHearts(900); };
+  $('next').onclick = function(){
+    i++;
+    if(i < reasons.length){
+      $('reason').textContent = reasons[i];
+      if(i === reasons.length - 1) $('next').textContent = "Et la dernière…";
+    } else {
+      show('s5');
+      startHearts(700);
+    }
+  };
+  var h2 = ["", "Oups, le Non a glissé 😄", "Il est trop rapide…", "Le Oui devient plus gros, tu vois ?", "Tu sais bien que c’est oui 💖"];
+  function dodge2(e){
+    if(e) e.preventDefault();
+    tries2++;
+    scale = Math.min(scale + 0.25, 2.2);
+    $('yes2').style.transform = 'scale(' + scale + ')';
+    $('hint2').textContent = h2[Math.min(tries2, h2.length - 1)];
+    var b = $('no2');
+    b.style.position = 'fixed';
+    b.style.left = (20 + Math.random() * (window.innerWidth - 120)) + 'px';
+    b.style.top = (20 + Math.random() * (window.innerHeight - 100)) + 'px';
+  }
+  $('no2').addEventListener('click', dodge2);
+  $('no2').addEventListener('touchstart', dodge2, {passive:false});
+  $('yes2').onclick = function(){ show('s6'); startHearts(120); };
+
+  $('again').onclick = function(){
+    tries = 0; tries2 = 0; scale = 1; i = 0;
+    var b = $('no'); b.style.display = ''; b.style.position = ''; b.style.left = ''; b.style.top = '';
+    var b2 = $('no2'); b2.style.position = ''; b2.style.left = ''; b2.style.top = '';
+    $('yes2').style.transform = '';
+    $('hint').textContent = ''; $('hint2').textContent = ''; $('next').textContent = "Une autre";
+    show('s1'); startHearts(1400);
+  };
+})();
+</script>
+</body>
+</html>
